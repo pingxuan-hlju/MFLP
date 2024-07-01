@@ -36,29 +36,6 @@ def tensor_shuffle(ts, dim=0):
     return ts[torch.randperm(ts.shape[dim])]
 
 
-# @ 计算高斯核相似性
-def gauss_sim(mat):
-    # 高斯核
-    sigma = 1 / torch.diag(torch.matmul(mat, mat.T)).mean()
-    # 向量写法
-    sim_mat = torch.mul(mat, mat).sum(dim=1, keepdims=True) + torch.mul(mat, mat).sum(dim=1,
-                                                                                      keepdims=True).T - 2 * torch.matmul(
-        mat, mat.T)
-    # 返回高斯核相似性矩阵
-    sim_mat = torch.exp(-1 * sigma * sim_mat)
-    # MTK...
-    # sim_mat= 1/ (1+ torch.exp(-15* sim_mat+ math.log(9999)))
-    return sim_mat
-
-
-# @ 计算hamming interaction profile similarity.
-def hip_sim(mat):
-    sim_ls, dim = [], mat.shape[1]
-    for i in range(mat.shape[0]):
-        sim_ls.append(((mat[i] - mat) == 0).sum(dim=1) / dim)
-    return torch.stack(sim_ls)
-
-
 # @ 带重启的随机游走, mat, like, (1373, 1373)
 def rwr(mat, times=10):
     # 0.1概率继续走, 0.9的概率回初始状态
